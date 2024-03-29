@@ -32,21 +32,41 @@
 #define RCC_OFFSET 			( 0x00001000UL )
 #define RCC_BASE 			( AHB1_PERIPH_BASE + RCC_OFFSET )
 
-#define AHB2EN_R_OFFSET 	( 0x4cUL )
-#define RCC_AHB2EN_R		( *( volatile unsigned int * )( RCC_BASE + AHB2EN_R_OFFSET ) )
 
-#define MODE_R_OFFSET 		( 0x0UL )
-#define GPIOA_MODE_R 		( *( volatile unsigned int * )( GPIOA_BASE + MODE_R_OFFSET ) )
-
-#define OD_R_OFFSET 		( 0x14UL )
-#define	GPIOA_OD_R			( *( volatile unsigned int * )( GPIOA_BASE + OD_R_OFFSET ) )
 
 #define GPIOAEN 			( 1u << 0 )
 #define PIN5 				( 1U << 5 )
 #define LED_PIN				PIN5
 
+#define __IO volatile
+
+typedef struct{
+	__IO uint32_t padding[ 19 ];
+	__IO uint32_t AHB2ENR;     /*!< RCC AHB2 peripheral clocks enable register,                              Address offset: 0x4C */
+}RCCTypeDef;
+
+
+
+
+typedef struct{
+	__IO uint32_t MODER;
+	__IO uint32_t OTYPER;
+	__IO uint32_t OSPEEDR;
+	__IO uint32_t PUPDR;
+	__IO uint32_t IDR;
+	__IO uint32_t ODR;
+	__IO uint32_t BSRR;
+	__IO uint32_t LCKR;
+	__IO uint32_t AFR[ 2 ];
+}GPIOTypeDef;
+
+
+#define RCC 	( ( RCCTypeDef* ) RCC_BASE )
+#define GPIOA	( ( GPIOTypeDef* ) GPIOA_BASE )
+
 static void toggle_PA5(){
-	GPIOA_OD_R ^= LED_PIN;
+//	GPIOA_OD_R ^= LED_PIN;
+	GPIOA->ODR ^= LED_PIN;
 }
 
 /*
@@ -54,16 +74,19 @@ static void toggle_PA5(){
  * &= ~( 1 << 11 ) set bit 11 to 0
  */
 int main( void ){
-	// 1. enable clock accessto GPIOA
-	RCC_AHB2EN_R |= GPIOAEN;
+	// 1. enable clock access to GPIOA
+//	RCC_AHB2EN_R |= GPIOAEN;
+ 	RCC->AHB2ENR |= GPIOAEN;
 	// 2. set PA5 as output pin
-	GPIOA_MODE_R |= ( 1 << 10 );
-	GPIOA_MODE_R &= ~( 1 << 11 );
+//	GPIOA_MODE_R |= ( 1 << 10 );
+//	GPIOA_MODE_R &= ~( 1 << 11 );
+	GPIOA->MODER |= ( 1 << 10 );
+	GPIOA->MODER &= ~( 1 << 11 );
 
 	while( 1 ){
 		// 3 set PA5 pin
 		toggle_PA5();
-		for( int i = 0; i < 500000; i ++ );
+		for( int i = 0; i < 50000; i ++ );
 
 	}
 
