@@ -1,5 +1,5 @@
 
-0_led_toggle_addr.elf:     file format elf32-littlearm
+stm32-bare-metal.elf:     file format elf32-littlearm
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
@@ -41,13 +41,13 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  18 .debug_macro  00000fb8  00000000  00000000  00010692  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .debug_line   000004b1  00000000  00000000  0001164a  2**0
+ 19 .debug_line   000004b3  00000000  00000000  0001164a  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 20 .debug_str    00003dcc  00000000  00000000  00011afb  2**0
+ 20 .debug_str    00003dcb  00000000  00000000  00011afd  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  21 .debug_frame  0000007c  00000000  00000000  000158c8  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 22 .debug_line_str 0000006e  00000000  00000000  00015944  2**0
+ 22 .debug_line_str 0000006d  00000000  00000000  00015944  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -115,10 +115,10 @@ int main( void ){
  80001e8:	af00      	add	r7, sp, #0
 	// 1. enable clock access to GPIOA
 //	RCC_AHB2EN_R |= GPIOAEN;
-	RCC->AHB2ENR |= GPIOAEN;
- 80001ea:	4b12      	ldr	r3, [pc, #72]	; (8000234 <main+0x50>)
+ 	RCC->AHB2ENR |= GPIOAEN;
+ 80001ea:	4b11      	ldr	r3, [pc, #68]	; (8000230 <main+0x4c>)
  80001ec:	6cdb      	ldr	r3, [r3, #76]	; 0x4c
- 80001ee:	4a11      	ldr	r2, [pc, #68]	; (8000234 <main+0x50>)
+ 80001ee:	4a10      	ldr	r2, [pc, #64]	; (8000230 <main+0x4c>)
  80001f0:	f043 0301 	orr.w	r3, r3, #1
  80001f4:	64d3      	str	r3, [r2, #76]	; 0x4c
 	// 2. set PA5 as output pin
@@ -141,7 +141,7 @@ int main( void ){
 		// 3 set PA5 pin
 		toggle_PA5();
  8000216:	f7ff ffd5 	bl	80001c4 <toggle_PA5>
-		for( int i = 0; i < 50000; i ++ );
+		for( int i = 0; i < 70000; i ++ );
  800021a:	2300      	movs	r3, #0
  800021c:	607b      	str	r3, [r7, #4]
  800021e:	e002      	b.n	8000226 <main+0x42>
@@ -149,13 +149,13 @@ int main( void ){
  8000222:	3301      	adds	r3, #1
  8000224:	607b      	str	r3, [r7, #4]
  8000226:	687b      	ldr	r3, [r7, #4]
- 8000228:	f24c 324f 	movw	r2, #49999	; 0xc34f
- 800022c:	4293      	cmp	r3, r2
- 800022e:	ddf7      	ble.n	8000220 <main+0x3c>
+ 8000228:	4a02      	ldr	r2, [pc, #8]	; (8000234 <main+0x50>)
+ 800022a:	4293      	cmp	r3, r2
+ 800022c:	ddf8      	ble.n	8000220 <main+0x3c>
 		toggle_PA5();
- 8000230:	e7f1      	b.n	8000216 <main+0x32>
- 8000232:	bf00      	nop
- 8000234:	40021000 	.word	0x40021000
+ 800022e:	e7f2      	b.n	8000216 <main+0x32>
+ 8000230:	40021000 	.word	0x40021000
+ 8000234:	0001116f 	.word	0x0001116f
 
 08000238 <Reset_Handler>:
 

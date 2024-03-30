@@ -86,7 +86,7 @@ int main( void ){
 	while( 1 ){
 		// 3 set PA5 pin
 		toggle_PA5();
-		for( int i = 0; i < 50000; i ++ );
+		for( int i = 0; i < 70000; i ++ );
 
 	}
 
