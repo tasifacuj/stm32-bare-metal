@@ -42,9 +42,12 @@
 									<listOptionValue builtIn="false" value="STM32"/>
 									<listOptionValue builtIn="false" value="NUCLEO_L476RG"/>
 									<listOptionValue builtIn="false" value="STM32L476RGTx"/>
+									<listOptionValue builtIn="false" value="STM32L476xx"/>
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths.2125342531" name="Include paths (-I)" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="../Inc"/>
+									<listOptionValue builtIn="false" value="&quot;C:\Users\tasifacij\projects\stm32\L476RG-workspace\chip_headers\CMSIS\Device\ST\STM32L4xx\Include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:\Users\tasifacij\projects\stm32\L476RG-workspace\chip_headers\CMSIS\Include&quot;"/>
 								</option>
 								<inputType id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.941586845" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c"/>
 							</tool>
@@ -169,4 +172,5 @@
 			<autodiscovery enabled="false" problemReportingEnabled="true" selectedProfileId=""/>
 		</scannerConfigBuildInfo>
 	</storageModule>
+	<storageModule moduleId="refreshScope"/>
 </cproject>
