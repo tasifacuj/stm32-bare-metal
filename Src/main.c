@@ -11,8 +11,11 @@ int main(void){
 	GPIOA->MODER &= ~( 1U << 11 );
 
 	while( 1 ){
-		GPIOA-> ODR ^= LED_PIN;
+		GPIOA->BSRR = LED_PIN;
 		for( int i = 0; i < 10000; i ++ );
+
+		GPIOA->BSRR = ( 1U << 21 );
+		for( int i = 0; i < 20000; i ++ );
 	}
 	return 0;
 }
