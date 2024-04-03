@@ -1,8 +1,10 @@
 #include "stm32l4xx.h"
 
+#include <stdio.h>
+
 #define GPIOA_EN		( 1u << 0 )
 #define USART2_EN		( 1u << 17 )
-#define SYS_FRQ 		4000000
+#define SYS_FRQ 		4000000// without clock conf default freq is 4Mhz, reference manual 6.2 Clocks, The MSI is used as system clock source after startup from Reset, configured at 4 MHz
 #define APB1_CLK		SYS_FRQ
 #define UART_BAUDRATE	115200
 #define CR1_TE			( 1U << 3 )
@@ -15,18 +17,20 @@ static void uart2_set_baudrate( USART_TypeDef* uartx, uint32_t clk, uint32_t bau
 static void uart2_tx_init( void );
 static void uart2_write( int data );
 
+int __io_putchar( int ch ){
+	uart2_write( ch );
+	return ch;
+}
+
 int main(void){
 	uart2_tx_init();
 	uint32_t idx = 0;
 
+	printf( ">> bare-metal uart tx\r\n" );
 
 	while( 1 ){
-		uart2_write( 'Y' );
-		char c = idx + '0';
-		uart2_write( c );
-	  uart2_write( '\r' );
-	  uart2_write( '\n' );
-	  idx ++;
+		printf( "Y %i\r\n", idx ++ );
+		for( int i = 0; i < 50000; i ++ );
 	}
 	return 0;
 }
