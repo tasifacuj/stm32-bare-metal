@@ -1,33 +1,69 @@
 #include "stm32l4xx.h"
 
-#define GPIOAEN		(1u << 0)
-#define GPIOC_EN	( 1u << 2 )
+#define GPIOAEN			( 1u << 0 )
+#define USART1_EN		( 1U << 14 )
+#define SYS_FREQ 		4000000
+#define APB2_CLK 		SYS_FREQ
+#define UART_BAUDRATE	115200
+#define CR1_TE			( 1U << 3 )
+#define CR1_UE			( 1U << 0 )
+#define SR_TXE			( 1U << 7 )
 
-#define PIN5 		( 1u << 5 )
-#define PIN13		( 1u << 13 )
-#define LED_PIN		PIN5
-#define BTN_PIN		PIN13
-
-
+// forward declarations
+static uint16_t uart_compute_div( uint32_t periphClock, uint32_t baud_rate );
+static void uart_set_baudrate( USART_TypeDef* usartx, uint32_t clk, uint32_t baudrate );
+void uart1_tx_init( void );
+static void uart1_write( int ch );
 
 int main(void){
-	// turn on clocking for gpioa and gpioc
-	RCC->AHB2ENR |= GPIOAEN;
-	RCC->AHB2ENR |= GPIOC_EN;
-
-	// set PA5 as output
-	GPIOA->MODER |= ( 1U << 10 );
-	GPIOA->MODER &= ~( 1U << 11 );
-
-	// set PC13 as input pin
-	GPIOC->MODER &= ~( 1u << 26 );
-	GPIOC->MODER &= ~( 1u << 27 );
+	uart1_tx_init();
 
 	while( 1 ){
-		if( 0 == ( GPIOC->IDR & BTN_PIN ) )
-			GPIOA->BSRR = LED_PIN;
-		else
-			GPIOA->BSRR = ( 1U << 21 );
+		uart1_write( 'Y' );
 	}
 	return 0;
 }
+
+void uart1_tx_init( void ){
+	/* configure gpio pin */
+
+	// enable clock access to gpioa
+	RCC->AHB2ENR |= GPIOAEN;
+
+	// set pa9 to alternate mode
+	GPIOA->MODER &= ~( 1U << 18 );
+	GPIOA->MODER |= ( 1U << 19 );
+
+	// set pa9 type as uart tx(AF7)
+	GPIOA->AFR[ 1 ] |= ( 1U << 4 );
+	GPIOA->AFR[ 1 ] |= ( 1U << 5 );
+	GPIOA->AFR[ 1 ] |= ( 1U << 6 );
+	GPIOA->AFR[ 1 ] &= ~( 1U << 7 );
+
+	/* configure USART */
+	// enable clock access to uart1
+	RCC->APB2ENR |= USART1_EN;
+
+	// set baudrate
+	uart_set_baudrate( USART1, APB2_CLK, UART_BAUDRATE );
+	// set transfer dir
+	USART1->CR1 = CR1_TE;
+	// enable uart
+	USART1->CR1 |= CR1_UE;
+}
+
+static void uart1_write( int ch ){
+	while( !( USART1->ISR & SR_TXE ) );
+	USART1->TDR = ( ch & 0xff );
+}
+
+static void uart_set_baudrate( USART_TypeDef* usartx, uint32_t clk, uint32_t baudrate ){
+	usartx->BRR = uart_compute_div(clk, baudrate);
+}
+
+static uint16_t uart_compute_div( uint32_t periphClock, uint32_t baud_rate ){
+	return ( periphClock + ( baud_rate / 2U ) ) / baud_rate;
+}
+
+
+
