@@ -2,15 +2,20 @@
 #include "uart.h"
 #include <stdio.h>
 
+#define GPIOA_EN	( 1U << 0 )
+#define GPIOA_5		( 1U << 5 )
+#define LED_PIN		GPIOA_5
+
+char key;
+
 int main(void){
-	uart2_tx_init();
+	uart2_rxtx_init();
 	int idx = 0;
 
 	printf( ">> bare-metal uart tx\r\n" );
 
 	while( 1 ){
-		printf( "Y %i\r\n", idx ++ );
-		for( int i = 0; i < 100000; i ++ );
+		key = uart2_read();
 	}
 	return 0;
 }
