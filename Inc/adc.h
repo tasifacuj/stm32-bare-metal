@@ -10,8 +10,8 @@
 
 #include <stdint.h>
 
-void PC0_adc1_ch1_init(void);
-uint32_t adc1_ch1_read( void );
-void adc1_ch1_start_conversion( void );
+void PC1_adc2_ch2_init(void);
+uint32_t adc2_ch2_read( void );
+void adc2_ch2_start_conversion( void );
 
 #endif /* ADC_H_ */

@@ -17,12 +17,13 @@ int main(void){
 	GPIOA->MODER &= ~( 1U << 11 );
 
 	uart2_tx_init();
-	PC0_adc1_ch1_init();
+	PC1_adc2_ch2_init();
 	printf( ">> bare-metal adc\r\n" );
 
+
 	while( 1 ){
-		adc1_ch1_start_conversion();
-		val = adc1_ch1_read();
+		adc2_ch2_start_conversion();
+		val = adc2_ch2_read();
 		printf( "adc value %d\r\n",(int) val );
 	}
 	return 0;
