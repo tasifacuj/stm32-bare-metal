@@ -41,27 +41,38 @@ static void test_systick_delay( void ){
 		   printf( ">>blink\r\n" );
 	   }
 }
+
+static void test_timer_delay(){
+	// PA5 led
+	   RCC->AHB2ENR |= GPIOA_EN;
+
+	   // set PA5 as output
+	   GPIOA->MODER |= ( 1U << 10 );
+	   GPIOA->MODER &= ~( 1U << 11 );
+	   uart2_tx_init();
+	   tim2_1hz_init();
+
+	   while( 1 ){
+		   // wait for update event
+		   while( ( TIM2->SR & SR_UIF ) == 0 );
+
+		   // clear update event
+		   TIM2->SR &= ~SR_UIF;
+
+		   GPIOA->ODR ^= LED_PIN;
+		   printf( ">>blink tim2\r\n" );
+	   }
+}
 #endif
 
 int main(void){
-// PA5 led
-   RCC->AHB2ENR |= GPIOA_EN;
 
-   // set PA5 as output
-   GPIOA->MODER |= ( 1U << 10 );
-   GPIOA->MODER &= ~( 1U << 11 );
-   uart2_tx_init();
-   tim2_1hz_init();
+   tim2_ch1_PA5_OC_init();
+
 
    while( 1 ){
 	   // wait for update event
-	   while( ( TIM2->SR & SR_UIF ) == 0 );
 
-	   // clear update event
-	   TIM2->SR &= ~SR_UIF;
-
-	   GPIOA->ODR ^= LED_PIN;
-	   printf( ">>blink tim2\r\n" );
    }
 
 	return 0;

@@ -12,4 +12,6 @@
 
 void tim2_1hz_init(void);
 
+void tim2_ch1_PA5_OC_init(void);
+
 #endif /* TIMER_H_ */
