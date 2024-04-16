@@ -3,13 +3,14 @@
 #include <stdio.h>
 #include "adc.h"
 #include "systick.h"
+#include "timer.h"
 
 #define GPIOA_EN	( 1U << 0 )
 #define GPIOA_5		( 1U << 5 )
 #define LED_PIN		GPIOA_5
 
 
-
+#if 0
 static void test_adc2_ch2(){
 	uart2_tx_init();
 	uint32_t val;
@@ -24,6 +25,24 @@ static void test_adc2_ch2(){
 	}
 }
 
+static void test_systick_delay( void ){
+	// PA5 led
+	   RCC->AHB2ENR |= GPIOA_EN;
+
+	   // set PA5 as output
+	   GPIOA->MODER |= ( 1U << 10 );
+	   GPIOA->MODER &= ~( 1U << 11 );
+	   uart2_tx_init();
+
+
+	while( 1 ){
+		   systick_delay_ms( 500 * 2 );
+		   GPIOA->ODR ^= LED_PIN;
+		   printf( ">>blink\r\n" );
+	   }
+}
+#endif
+
 int main(void){
 // PA5 led
    RCC->AHB2ENR |= GPIOA_EN;
@@ -32,11 +51,17 @@ int main(void){
    GPIOA->MODER |= ( 1U << 10 );
    GPIOA->MODER &= ~( 1U << 11 );
    uart2_tx_init();
+   tim2_1hz_init();
 
    while( 1 ){
-	   systick_delay_ms( 500 * 2 );
+	   // wait for update event
+	   while( ( TIM2->SR & SR_UIF ) == 0 );
+
+	   // clear update event
+	   TIM2->SR &= ~SR_UIF;
+
 	   GPIOA->ODR ^= LED_PIN;
-	   printf( ">>blink\r\n" );
+	   printf( ">>blink tim2\r\n" );
    }
 
 	return 0;
