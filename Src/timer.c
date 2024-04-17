@@ -98,8 +98,8 @@ void tim3_pa6_input_capture( void ){
 	RCC->APB1ENR1 |= TIM3_EN;
 
 	// set prescaler
-	TIM3->PSC = 400 - 1;// 4 000 000 / 400 == 10 000
-	TIM3->ARR = 65536 - 1;
+//	TIM3->PSC = 400 - 1;// 4 000 000 / 400 == 10 000
+//	TIM3->ARR = 65536 - 1;
 
 	// set CH1 capture to input mode
 	TIM3->CCMR1 = CCER_CC1S;

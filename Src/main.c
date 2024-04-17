@@ -4,11 +4,13 @@
 #include "adc.h"
 #include "systick.h"
 #include "timer.h"
+#include "ext.h"
 
 #define GPIOA_EN	( 1U << 0 )
 #define GPIOA_5		( 1U << 5 )
 #define LED_PIN		GPIOA_5
 
+static void exti_callback( void );
 
 #if 0
 static void test_adc2_ch2(){
@@ -66,24 +68,36 @@ static void test_timer_delay(){
 #endif
 
 
-int timestamp = 0;
-
 int main(void){
 
-//	uart2_tx_init();
-	tim3_pa6_input_capture();// connect PA5 and PA6
-   tim2_ch1_PA5_OC_init();
+	// PA5 led
+   RCC->AHB2ENR |= GPIOA_EN;
 
+   // set PA5 as output
+   GPIOA->MODER |= ( 1U << 10 );
+   GPIOA->MODER &= ~( 1U << 11 );
+   uart2_tx_init();
+   pc13_exti_init();
 
+	while( 1 ){
 
-   while( 1 ){
-	   // wait for capture event
-	   while( ( TIM3->SR & SR_CC1IF ) == 0 );
-
-	   // read value
-	   timestamp = TIM3->CCR1;
-   }
+	}
 
 	return 0;
 }
 
+
+void EXTI15_10_IRQHandler( void ){
+	if( ( EXTI->PR1 & LINE_13 ) != 0 ) {
+		// clear pr flag
+		EXTI->PR1 |= LINE_13;
+		// do smth
+		exti_callback();
+	}
+}
+
+
+static void exti_callback( void ){
+	printf( ">> pc13\r\n" );
+	GPIOA->ODR ^= LED_PIN;
+}
