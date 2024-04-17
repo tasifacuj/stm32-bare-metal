@@ -65,14 +65,23 @@ static void test_timer_delay(){
 }
 #endif
 
+
+int timestamp = 0;
+
 int main(void){
 
+//	uart2_tx_init();
+	tim3_pa6_input_capture();// connect PA5 and PA6
    tim2_ch1_PA5_OC_init();
 
 
-   while( 1 ){
-	   // wait for update event
 
+   while( 1 ){
+	   // wait for capture event
+	   while( ( TIM3->SR & SR_CC1IF ) == 0 );
+
+	   // read value
+	   timestamp = TIM3->CCR1;
    }
 
 	return 0;

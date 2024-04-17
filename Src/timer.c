@@ -16,6 +16,10 @@
 #define GPIOA_5		( 1U << 5 )
 
 #define AFR5_TIM	( 1U << 20 )
+#define AFR6_TIM	( 1U << 25 )
+#define TIM3_EN 	( 1U << 1 )
+
+#define CCER_CC1S	( 1U < 0 )
 
 // without clock conf default freq is 4Mhz,
 // reference manual 6.2 Clocks.
@@ -59,7 +63,8 @@ void tim2_ch1_PA5_OC_init(void){
 	TIM2->PSC = 400 - 1;// 4 000 000 / 400 == 10 000
 
 	// set ARR
-	TIM2->ARR = 1000 - 1;// 100000 / 1000 == 10Hz
+//	TIM2->ARR = 1000 - 1;// 100000 / 1000 == 10Hz
+	TIM2->ARR = 10000 - 1;// 100000 / 1000 == 1Hz
 
 	{// base + OC stuff
 		// set output compare toggle mode, enable OCM1 mode
@@ -74,4 +79,35 @@ void tim2_ch1_PA5_OC_init(void){
 
 	// enable timer
 	TIM2->CR1 = CR1_CEN;
+}
+
+void tim3_pa6_input_capture( void ){
+	// enable clock access to GPIOA
+	RCC->AHB2ENR |= GPIOA_EN;
+
+	// set pa6 mode to alt func mode
+	// 8.5.1 moder reference manual, PA6 bits 13:12, MODER6
+	GPIOA->MODER &= ~( 1U << 12 );
+	GPIOA->MODER |= ( 1U << 13 );
+
+	// set PA6 alt func type to TIM3_CH1 - AF2
+	GPIOA->AFR[ 0 ] |= AFR6_TIM;
+
+	/* enable clock access to TIM3*/
+	/* enable clock 6.4.19 APB1 peripheral clock enable register 1 (RCC_APB1ENR1) */
+	RCC->APB1ENR1 |= TIM3_EN;
+
+	// set prescaler
+	TIM3->PSC = 400 - 1;// 4 000 000 / 400 == 10 000
+	TIM3->ARR = 65536 - 1;
+
+	// set CH1 capture to input mode
+	TIM3->CCMR1 = CCER_CC1S;
+
+	// set CH1 capture at rising edge
+	TIM3->CCER |= CCER_CC1E;
+
+	// enable TIM3
+//	TIM3->CNT = 0;
+	TIM3->CR1 = CR1_CEN;
 }
