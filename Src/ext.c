@@ -21,7 +21,7 @@ void pc13_exti_init( void ){
 	// enable clock access to SYSCFG
 	RCC->APB2ENR |= SYSCFG_EN;
 
-	// set PORT C as inout func type
+	// set PORT C as input func type
 	GPIOC->MODER &= ( 1U << 26 );
 	GPIOC->MODER &= ( 1U << 27 );
 

@@ -6,6 +6,7 @@
 #include "timer.h"
 #include "ext.h"
 
+
 #define GPIOA_EN	( 1U << 0 )
 #define GPIOA_5		( 1U << 5 )
 #define LED_PIN		GPIOA_5
@@ -65,19 +66,37 @@ static void test_timer_delay(){
 		   printf( ">>blink tim2\r\n" );
 	   }
 }
-#endif
 
-
-int main(void){
-
+static void test_exti_interrupt( void ){
 	// PA5 led
-   RCC->AHB2ENR |= GPIOA_EN;
+	RCC->AHB2ENR |= GPIOA_EN;
 
    // set PA5 as output
    GPIOA->MODER |= ( 1U << 10 );
    GPIOA->MODER &= ~( 1U << 11 );
    uart2_tx_init();
    pc13_exti_init();
+
+	while( 1 ){
+
+	}
+
+}
+
+#endif
+
+static void init_led_PA5(void){
+	// PA5 led
+	RCC->AHB2ENR |= GPIOA_EN;
+
+	// set PA5 as output
+	GPIOA->MODER |= ( 1U << 10 );
+	GPIOA->MODER &= ~( 1U << 11 );
+}
+
+int main(void){
+	init_led_PA5();
+	uart2_rxtx_interrupt_init();
 
 	while( 1 ){
 
@@ -93,6 +112,17 @@ void EXTI15_10_IRQHandler( void ){
 		EXTI->PR1 |= LINE_13;
 		// do smth
 		exti_callback();
+	}
+}
+
+void USART2_IRQHandler( void ){
+	if( USART2->ISR & ISR_RXNE){
+		char ch = USART2->RDR;
+
+		if( ch == '1' )
+			GPIOA->ODR |= LED_PIN;
+		else
+			GPIOA->ODR &= ~LED_PIN;
 	}
 }
 
