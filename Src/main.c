@@ -83,7 +83,6 @@ static void test_exti_interrupt( void ){
 
 }
 
-#endif
 
 static void init_led_PA5(void){
 	// PA5 led
@@ -93,14 +92,19 @@ static void init_led_PA5(void){
 	GPIOA->MODER |= ( 1U << 10 );
 	GPIOA->MODER &= ~( 1U << 11 );
 }
+#endif
+
 
 int main(void){
-	init_led_PA5();
-	uart2_rxtx_interrupt_init();
+//	init_led_PA5();
+	uart2_tx_init();
+	PC1_adc2_ch2_interrupt_init();
+	printf( ">> bare-metal adc\r\n" );
+	adc2_ch2_start_conversion();
 
-	while( 1 ){
+		while( 1 ){
 
-	}
+		}
 
 	return 0;
 }
@@ -131,3 +135,13 @@ static void exti_callback( void ){
 	printf( ">> pc13\r\n" );
 	GPIOA->ODR ^= LED_PIN;
 }
+
+void ADC1_2_IRQHandler(void){
+	if(ADC2->ISR & SR_EOC){
+		ADC2->ISR &= ~SR_EOC;
+		uint32_t val = ADC2->DR;
+		printf( "int: adc value %d\r\n",(int) val );
+		adc2_ch2_start_conversion();
+	}
+}
+
