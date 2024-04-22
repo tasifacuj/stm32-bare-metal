@@ -99,8 +99,8 @@ int main(void){
 //	init_led_PA5();
 	uart2_tx_init();
 	PC1_adc2_ch2_interrupt_init();
-	printf( ">> bare-metal adc\r\n" );
-	adc2_ch2_start_conversion();
+	tim2_1hz_interrupt_init();
+	printf( ">> bare-metal adc+interrupt by tim2\r\n" );
 
 		while( 1 ){
 
@@ -141,7 +141,11 @@ void ADC1_2_IRQHandler(void){
 		ADC2->ISR &= ~SR_EOC;
 		uint32_t val = ADC2->DR;
 		printf( "int: adc value %d\r\n",(int) val );
-		adc2_ch2_start_conversion();
 	}
+}
+
+void TIM2_IRQHandler( void ){
+	TIM2->SR &= ~SR_UIF;
+	adc2_ch2_start_conversion();
 }
 

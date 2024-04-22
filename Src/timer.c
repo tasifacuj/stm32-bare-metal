@@ -21,6 +21,8 @@
 
 #define CCER_CC1S	( 1U < 0 )
 
+
+#define DIER_UI	( 1U << 0 )
 // without clock conf default freq is 4Mhz,
 // reference manual 6.2 Clocks.
 // The MSI is used as system clock source after startup from Reset, configured at 4 MHz
@@ -111,3 +113,26 @@ void tim3_pa6_input_capture( void ){
 //	TIM3->CNT = 0;
 	TIM3->CR1 = CR1_CEN;
 }
+
+void tim2_1hz_interrupt_init(void){
+	/* enable clock 6.4.19 APB1 peripheral clock enable register 1 (RCC_APB1ENR1) */
+	RCC->APB1ENR1 |= TIM2_EN;
+
+	// set prescaler
+	TIM2->PSC = 400 - 1;// 4 000 000 / 400 == 10 000
+
+	// set ARR
+	TIM2->ARR = 10000 - 1;// 100000 / 10000 == 10Hz
+
+	// clear counter
+	TIM2->CNT = 0;
+
+	// enable timer
+	TIM2->CR1 = CR1_CEN;
+
+	// enable interrupt
+	TIM2->DIER |= DIER_UI;
+	NVIC_EnableIRQ( TIM2_IRQn );
+}
+
+

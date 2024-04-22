@@ -17,4 +17,6 @@ void tim2_ch1_PA5_OC_init(void);
 
 void tim3_pa6_input_capture( void );
 
+void tim2_1hz_interrupt_init(void);
+
 #endif /* TIMER_H_ */
